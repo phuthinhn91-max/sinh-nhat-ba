@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chúc Mừng Sinh Nhật Bà</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{overflow:hidden;font-family:Arial,sans-serif;background:#000}
+#start{position:fixed;inset:0;display:flex;justify-content:center;align-items:center;
+background:linear-gradient(135deg,#ffb6c1,#ffc0cb,#ffe4e1);z-index:9999}
+#giftBtn{font-size:30px;padding:18px 36px;border:none;border-radius:20px;cursor:pointer}
+#main{display:none;position:fixed;inset:0}
+#bg{position:absolute;width:100%;height:100%;object-fit:cover}
+.overlay{position:absolute;inset:0;background:rgba(0,0,0,.35)}
+#message{position:absolute;top:55%;left:50%;transform:translate(-50%,-50%);width:85%;
+text-align:center;color:white;font-size:2rem;font-weight:bold;z-index:100;
+text-shadow:0 0 10px #fff,0 0 20px pink}
+#cake{position:absolute;top:10%;left:50%;transform:translateX(-50%);
+font-size:90px;z-index:100;animation:bounce 2s infinite}
+@keyframes bounce{50%{transform:translateX(-50%) translateY(-12px)}}
+.float{position:fixed;bottom:-60px;pointer-events:none;z-index:50;animation:floatUp linear forwards}
+@keyframes floatUp{
+0%{opacity:0;transform:translateY(0)}
+10%{opacity:1}
+100%{opacity:0;transform:translateY(-120vh) translateX(50px) rotate(360deg)}
+}
+#fireworks{position:fixed;inset:0;pointer-events:none;z-index:40}
+.finalbox{background:rgba(255,192,203,.18);backdrop-filter:blur(6px);
+padding:24px;border-radius:20px}
+</style>
+</head>
+<body>
+
+<div id="start">
+<button id="giftBtn">🎁 MỞ QUÀ CHO BÀ 🎁</button>
+</div>
+
+<div id="main">
+<img id="bg" src="family1.jpg">
+<div class="overlay"></div>
+<canvas id="fireworks"></canvas>
+<div id="cake">🎂</div>
+<div id="message"></div>
+<audio id="music" loop>
+<source src="happy-birthday.mp3" type="audio/mpeg">
+</audio>
+</div>
+
+<script>
+const photos=["family1.jpg","family2.jpg","family3.jpg","family4.jpg"];
+let photoIndex=0;
+function nextPhoto(){
+photoIndex=(photoIndex+1)%photos.length;
+document.getElementById("bg").src=photos[photoIndex];
+}
+
+const wishes=[
+"🎂 Chúc mừng sinh nhật Bà yêu quý!",
+"Chúc Bà luôn mạnh khỏe và nhiều niềm vui.",
+"Cảm ơn Bà vì đã luôn yêu thương con cháu.",
+"Chúc Bà luôn bình an và hạnh phúc.",
+"Những bữa cơm và câu chuyện của Bà là ký ức đẹp nhất.",
+"Gia đình luôn yêu thương Bà rất nhiều ❤️"
+];
+
+const msg=document.getElementById("message");
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+async function typeWriter(text){
+msg.innerHTML="";
+for(let i=0;i<text.length;i++){
+msg.innerHTML+=text[i];
+await sleep(25);
+}
+}
+
+const icons=["❤️","💖","💕","🌸","🌷","✨","🌟"];
+function createFloating(){
+const el=document.createElement("div");
+el.className="float";
+el.innerHTML=icons[Math.floor(Math.random()*icons.length)];
+el.style.left=Math.random()*window.innerWidth+"px";
+el.style.fontSize=(18+Math.random()*30)+"px";
+el.style.animationDuration=(4+Math.random()*4)+"s";
+document.body.appendChild(el);
+setTimeout(()=>el.remove(),8000);
+}
+
+const canvas=document.getElementById("fireworks");
+const ctx=canvas.getContext("2d");
+function resize(){canvas.width=innerWidth;canvas.height=innerHeight;}
+resize(); addEventListener("resize",resize);
+const particles=[];
+
+function firework(){
+const x=Math.random()*canvas.width;
+const y=Math.random()*canvas.height*0.6;
+for(let i=0;i<100;i++){
+particles.push({x,y,dx:(Math.random()-0.5)*10,dy:(Math.random()-0.5)*10,life:100});
+}
+}
+
+function animate(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
+for(let i=particles.length-1;i>=0;i--){
+let p=particles[i];
+p.x+=p.dx; p.y+=p.dy; p.dy+=0.04; p.life--;
+ctx.beginPath();
+ctx.arc(p.x,p.y,2,0,Math.PI*2);
+ctx.fillStyle=`hsl(${(p.life*4)%360},100%,60%)`;
+ctx.fill();
+if(p.life<=0) particles.splice(i,1);
+}
+requestAnimationFrame(animate);
+}
+animate();
+
+document.getElementById("giftBtn").onclick=async()=>{
+start.style.display="none";
+main.style.display="block";
+music.play().catch(()=>{});
+
+const hearts=setInterval(createFloating,200);
+const slides=setInterval(nextPhoto,5000);
+
+for(let i=0;i<8;i++) setTimeout(firework,i*300);
+const fw=setInterval(firework,1800);
+
+for(const text of wishes){
+await typeWriter(text);
+await sleep(1400);
+msg.innerHTML="";
+}
+
+clearInterval(hearts);
+clearInterval(slides);
+clearInterval(fw);
+
+for(let i=0;i<15;i++) setTimeout(firework,i*200);
+
+msg.innerHTML=`
+<div class="finalbox">
+💖 CHÚC MỪNG SINH NHẬT BÀ 💖
+<br><br>
+Chúc Bà luôn mạnh khỏe, vui vẻ và hạnh phúc.
+<br>
+Cảm ơn Bà vì đã luôn yêu thương và chăm sóc gia đình.
+<br><br>
+🌸 Cả gia đình luôn yêu thương Bà 🌸
+<br><br>
+<button onclick="location.reload()" style="padding:10px 20px;border:none;border-radius:10px;cursor:pointer">
+🔄 Xem lại
+</button>
+</div>`;
+};
+</script>
+</body>
+</html>
